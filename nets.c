@@ -234,7 +234,54 @@ iterate_pairs ()
 	    }
 	}
 
+
+  /* update weights for L1 and L2 in cases when one or both are not presented with input */
+
+  int i, j, s_i, s_j, l2_i, l2_j, l1_i, l1_j;
+  double s_activation, l_activation; /* activation values from sem map and the other phonetic map */
+
+  /* find semantic unit being activated */
+  find_closest_unit(&s_i, &s_j, nsnet, sunits, swords, pairs[shuffletable[pairi]].sindex, nsrep);
   
+  if (!train_l1 && train_l2) {
+    /* find l2 unit being activated */
+    find_closest_unit(&l2_i, &l2_j, nl2net, l2units, l2words, pairs[shuffletable[pairi]].l2index, nl2rep);
+
+    /* update l1 units */
+    for (i = 0; i < nl1net; i++)
+      for (j = 0; j < nl1net; j++) {
+        s_activation = sunits[s_i][s_j].value * sl1assoc[s_i][s_j][i][j];
+        l_activation = l2units[l2_i][l2_j].value * l2l1assoc[l2_i][l2_j][i][j];
+        l1units[i][j].value = s_activation + l_activation;
+      } 
+  }
+
+  if (!train_l2 && train_l1) {
+
+    /* find l1 unit being activated */
+    find_closest_unit(&l1_i, &l1_j, nl1net, l1units, l1words, pairs[shuffletable[pairi]].l1index, nl1rep);
+
+    /* update l2 units */
+    for (i = 0; i < nl2net; i++)
+      for (j = 0; j < nl2net; j++) {
+        s_activation = sunits[s_i][s_j].value * sl2assoc[s_i][s_j][i][j];
+        l_activation = l1units[l1_i][l1_j].value * l1l2assoc[l1_i][l1_j][i][j];
+        l2units[i][j].value = s_activation + l_activation;
+      } 
+  }
+
+  if (!train_l1 && !train_l2) {
+    for (i = 0; i < nl1net; i++)
+      for (j = 0; j < nl1net; j++) {
+        l1units[i][j].value = sunits[s_i][s_j].value * sl1assoc[s_i][s_j][i][j];
+      } 
+    for (i = 0; i < nl2net; i++)
+      for (j = 0; j < nl2net; j++) {
+        l2units[i][j].value = sunits[s_i][s_j].value * sl2assoc[s_i][s_j][i][j];
+
+      } 
+  }
+
       /* finally, update the 3 associations */
       if (!testing && sl1_assoc_running &&
 	  pairs[shuffletable[pairi]].l1index != NONE &&
