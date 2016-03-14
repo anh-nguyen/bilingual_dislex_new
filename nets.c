@@ -126,14 +126,56 @@ iterate_pairs ()
       bool train_l1 = bool_with_prob(l1_exposure);
       bool train_l2 = bool_with_prob(l2_exposure);
 
-      /* first propagate from L1 to L2 and semantic */
-      if (pairs[shuffletable[pairi]].l1index != NONE && train_l1)
+    if (!train_l1) {
+      clear_values(l1units, nl1net);
+    }
+    if (!train_l2) {
+      clear_values(l2units, nl2net);
+    }
+  /* propagate from semantic to L1 and L2 */
+      if (pairs[shuffletable[pairi]].sindex != NONE)
+  {
+    if (sem_running || sl1_assoc_running || sl2_assoc_running)
+      present_input (SINPMOD, sunits, nsnet, swords,
+         pairs[shuffletable[pairi]].sindex,
+         sprop, &nsprop, sem_nc);
+    if (!testing & sem_running)
+      modify_input_weights (SINPMOD, sunits, sem_alpha, sprop, nsprop);
+    if (testing && sl1_assoc_running)
+      associate (sunits, L1OUTMOD, l1units, nl1net, l1words,
+           pairs[shuffletable[pairi]].l1index,
+           sprop, nsprop, sl1assoc);
+    if (testing && sl2_assoc_running)
+      associate (sunits, L2OUTMOD, l2units, nl2net, l2words,
+           pairs[shuffletable[pairi]].l2index,
+           sprop, nsprop, sl2assoc);
+    if (testing && displaying && (sem_running || sl1_assoc_running || sl2_assoc_running))
+      {
+        display_lex (SINPMOD, sunits, nsnet);
+        display_error (SINPMOD);
+        if (sl1_assoc_running)
+    {
+      display_lex (L1OUTMOD, l1units, nl1net);
+      display_error (L1OUTMOD);
+    }
+        if (sl2_assoc_running)
+    {
+      display_lex (L2OUTMOD, l2units, nl2net);
+      display_error (L2OUTMOD);
+    }
+        wait_and_handle_events ();
+      }
+  }
+
+
+      /* then propagate from L1 to L2 and semantic */
+      if (pairs[shuffletable[pairi]].l1index != NONE)
 	{
-	  if ((l1_running || l1l2_assoc_running || sl1_assoc_running))
+	  if ((l1_running || l1l2_assoc_running || sl1_assoc_running) && train_l1)
 	    present_input (L1INPMOD, l1units, nl1net, l1words,
 			   pairs[shuffletable[pairi]].l1index,
 			   l1prop, &nl1prop, l1_nc); 
-	  if (!testing && l1_running)
+	  if (!testing && l1_running && train_l1)
 	    modify_input_weights (L1INPMOD, l1units, l1_alpha, l1prop, nl1prop);
 	  if (testing && sl1_assoc_running)
 	    associate (l1units, SOUTMOD, sunits, nsnet, swords,
@@ -164,13 +206,13 @@ iterate_pairs ()
 	}
 
         /* then propagate from L2 to L1 and semantic */
-      if (pairs[shuffletable[pairi]].l2index != NONE && train_l2)
+      if (pairs[shuffletable[pairi]].l2index != NONE)
   {
-    if ((l2_running || l1l2_assoc_running || sl2_assoc_running))
+    if ((l2_running || l1l2_assoc_running || sl2_assoc_running) && train_l2)
       present_input (L2INPMOD, l2units, nl2net, l2words,
          pairs[shuffletable[pairi]].l2index,
          l2prop, &nl2prop, l2_nc);
-    if (!testing && l2_running)
+    if (!testing && l2_running && train_l2)
       modify_input_weights (L2INPMOD, l2units, l2_alpha, l2prop, nl2prop);
     if (testing && sl2_assoc_running)
       associate (l2units, SOUTMOD, sunits, nsnet, swords,
@@ -198,52 +240,16 @@ iterate_pairs ()
       }
   } 
   
-
-      /* then propagate from semantic to L1 and L2 */
-      if (pairs[shuffletable[pairi]].sindex != NONE)
-	{
-	  if (sem_running || sl1_assoc_running || sl2_assoc_running)
-	    present_input (SINPMOD, sunits, nsnet, swords,
-			   pairs[shuffletable[pairi]].sindex,
-			   sprop, &nsprop, sem_nc);
-	  if (!testing & sem_running)
-	    modify_input_weights (SINPMOD, sunits, sem_alpha, sprop, nsprop);
-	  if (testing && sl1_assoc_running)
-	    associate (sunits, L1OUTMOD, l1units, nl1net, l1words,
-		       pairs[shuffletable[pairi]].l1index,
-		       sprop, nsprop, sl1assoc);
-    if (testing && sl2_assoc_running)
-      associate (sunits, L2OUTMOD, l2units, nl2net, l2words,
-           pairs[shuffletable[pairi]].l2index,
-           sprop, nsprop, sl2assoc);
-	  if (testing && displaying && (sem_running || sl1_assoc_running || sl2_assoc_running))
-	    {
-	      display_lex (SINPMOD, sunits, nsnet);
-	      display_error (SINPMOD);
-	      if (sl1_assoc_running)
-		{
-		  display_lex (L1OUTMOD, l1units, nl1net);
-		  display_error (L1OUTMOD);
-		}
-        if (sl2_assoc_running)
-    {
-      display_lex (L2OUTMOD, l2units, nl2net);
-      display_error (L2OUTMOD);
-    }
-	      wait_and_handle_events ();
-	    }
-	}
-
-
-  /* update weights for L1 and L2 in cases when one or both are not presented with input */
+  /* update all maps to add activation from other maps */
 
   int i, j, s_i, s_j, l2_i, l2_j, l1_i, l1_j;
   double s_activation, l_activation; /* activation values from sem map and the other phonetic map */
 
-  /* find semantic unit being activated */
-  find_closest_unit(&s_i, &s_j, nsnet, sunits, swords, pairs[shuffletable[pairi]].sindex, nsrep);
-  
-  if (!train_l1 && train_l2) {
+  if (!testing) {
+    /* find semantic unit being activated */
+    find_closest_unit(&s_i, &s_j, nsnet, sunits, swords, pairs[shuffletable[pairi]].sindex, nsrep);
+    /* find l1 unit being activated */
+    find_closest_unit(&l1_i, &l1_j, nl1net, l1units, l1words, pairs[shuffletable[pairi]].l1index, nl1rep);
     /* find l2 unit being activated */
     find_closest_unit(&l2_i, &l2_j, nl2net, l2units, l2words, pairs[shuffletable[pairi]].l2index, nl2rep);
 
@@ -252,36 +258,24 @@ iterate_pairs ()
       for (j = 0; j < nl1net; j++) {
         s_activation = sunits[s_i][s_j].value * sl1assoc[s_i][s_j][i][j];
         l_activation = l2units[l2_i][l2_j].value * l2l1assoc[l2_i][l2_j][i][j];
-        l1units[i][j].value = s_activation + l_activation;
+        l1units[i][j].value += s_activation + l_activation;
       } 
-  }
-
-  if (!train_l2 && train_l1) {
-
-    /* find l1 unit being activated */
-    find_closest_unit(&l1_i, &l1_j, nl1net, l1units, l1words, pairs[shuffletable[pairi]].l1index, nl1rep);
 
     /* update l2 units */
     for (i = 0; i < nl2net; i++)
       for (j = 0; j < nl2net; j++) {
         s_activation = sunits[s_i][s_j].value * sl2assoc[s_i][s_j][i][j];
         l_activation = l1units[l1_i][l1_j].value * l1l2assoc[l1_i][l1_j][i][j];
-        l2units[i][j].value = s_activation + l_activation;
+        l2units[i][j].value += s_activation + l_activation;
+      } 
+
+    /* update sem units */
+    for (i = 0; i < nsnet; i++)
+      for (j = 0; j < nsnet; j++) {
+        sunits[i][j].value += l1units[l1_i][l1_j].value * l1sassoc[l1_i][l1_j][i][j] + l2units[l2_i][l2_j].value * l2sassoc[l2_i][l2_j][i][j];
       } 
   }
-
-  if (!train_l1 && !train_l2) {
-    for (i = 0; i < nl1net; i++)
-      for (j = 0; j < nl1net; j++) {
-        l1units[i][j].value = sunits[s_i][s_j].value * sl1assoc[s_i][s_j][i][j];
-      } 
-    for (i = 0; i < nl2net; i++)
-      for (j = 0; j < nl2net; j++) {
-        l2units[i][j].value = sunits[s_i][s_j].value * sl2assoc[s_i][s_j][i][j];
-
-      } 
-  }
-
+  
       /* finally, update the 3 associations */
       if (!testing && sl1_assoc_running &&
 	  pairs[shuffletable[pairi]].l1index != NONE &&
@@ -550,7 +544,7 @@ assocresponse (unit, i, j, inpunits, assoc, prop, nprop)
 
   /* propagate activity in the input map through the associative weights
      to the output unit */
-  unit->value = 0.0;
+  /*unit->value = 0.0;*/
   for (p = 0; p < nprop; p++)
     unit->value += inpunits[prop[p].i][prop[p].j].value
                    * assoc[prop[p].i][prop[p].j][i][j];

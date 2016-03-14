@@ -222,7 +222,8 @@ print_assoc_stats(epoch)
         for (j = 0; j < nl1net; j++)
           {
             l1units[i][j].prevvalue = l1units[i][j].value;
-            l1units[i][j].value = l1units[i][j].value + (sl1assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value);
+            l1units[i][j].value = sl1assoc[s_i][s_j][i][j];
+            /*l1units[i][j].value = l1units[i][j].value + (sl1assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value); */
             updatebestworst (&best, &foo, &besti, &bestj, &l1units[i][j],
                  i, j, fgreater, fsmaller);
           }
@@ -247,7 +248,8 @@ print_assoc_stats(epoch)
         for (j = 0; j < nl2net; j++)
           {
             l2units[i][j].prevvalue = l2units[i][j].value;
-            l2units[i][j].value = l2units[i][j].value + (sl2assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value);
+            /*l2units[i][j].value = l2units[i][j].value + (sl2assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value); */
+            l2units[i][j].value = sl2assoc[s_i][s_j][i][j];
             updatebestworst (&best, &foo, &besti, &bestj, &l2units[i][j],
                  i, j, fgreater, fsmaller);
           }
