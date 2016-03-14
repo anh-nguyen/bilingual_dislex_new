@@ -213,8 +213,8 @@ print_assoc_stats(epoch)
           {
             l1units[ii][jj].prevvalue = l1units[ii][jj].value;
             l1units[ii][jj].value = (sl2assoc[s_i][s_j][i][j] == 0) ? 0.0 : l2l1assoc[i][j][ii][jj] + sl2assoc[s_i][s_j][i][j];
+          
           }
-      
       /* find index of best-matching l1 word */
       best = (-1);
       foo = (-1);

@@ -125,15 +125,15 @@ iterate_pairs ()
     {
       bool train_l1 = bool_with_prob(l1_exposure);
       bool train_l2 = bool_with_prob(l2_exposure);
-      
+
       /* first propagate from L1 to L2 and semantic */
-      if (pairs[shuffletable[pairi]].l1index != NONE)
+      if (pairs[shuffletable[pairi]].l1index != NONE && train_l1)
 	{
-	  if ((l1_running || l1l2_assoc_running || sl1_assoc_running) && train_l1)
+	  if ((l1_running || l1l2_assoc_running || sl1_assoc_running))
 	    present_input (L1INPMOD, l1units, nl1net, l1words,
 			   pairs[shuffletable[pairi]].l1index,
 			   l1prop, &nl1prop, l1_nc); 
-	  if (!testing && l1_running && train_l1)
+	  if (!testing && l1_running)
 	    modify_input_weights (L1INPMOD, l1units, l1_alpha, l1prop, nl1prop);
 	  if (testing && sl1_assoc_running)
 	    associate (l1units, SOUTMOD, sunits, nsnet, swords,
@@ -164,13 +164,13 @@ iterate_pairs ()
 	}
 
         /* then propagate from L2 to L1 and semantic */
-      if (pairs[shuffletable[pairi]].l2index != NONE)
+      if (pairs[shuffletable[pairi]].l2index != NONE && train_l2)
   {
-    if ((l2_running || l1l2_assoc_running || sl2_assoc_running) && train_l2)
+    if ((l2_running || l1l2_assoc_running || sl2_assoc_running))
       present_input (L2INPMOD, l2units, nl2net, l2words,
          pairs[shuffletable[pairi]].l2index,
          l2prop, &nl2prop, l2_nc);
-    if (!testing && l2_running && train_l2)
+    if (!testing && l2_running)
       modify_input_weights (L2INPMOD, l2units, l2_alpha, l2prop, nl2prop);
     if (testing && sl2_assoc_running)
       associate (l2units, SOUTMOD, sunits, nsnet, swords,
@@ -234,6 +234,7 @@ iterate_pairs ()
 	    }
 	}
 
+  
       /* finally, update the 3 associations */
       if (!testing && sl1_assoc_running &&
 	  pairs[shuffletable[pairi]].l1index != NONE &&
