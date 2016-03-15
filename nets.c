@@ -239,7 +239,7 @@ iterate_pairs ()
 
   /* update untrained maps to add activation from other maps, then train them */
   
-  if (!testing && !train_l1 && train_l2) {
+  if (!train_l1 && train_l2) {
     /* find semantic unit being activated */
     find_closest_unit(&s_i, &s_j, nsnet, sunits, swords, pairs[shuffletable[pairi]].sindex, nsrep);
     /* find l2 unit being activated */
@@ -295,7 +295,7 @@ iterate_pairs ()
   }
 
 
-  if (!testing && !train_l2 && train_l1) {
+  if (!train_l2 && train_l1) {
     /* find semantic unit being activated */
     find_closest_unit(&s_i, &s_j, nsnet, sunits, swords, pairs[shuffletable[pairi]].sindex, nsrep);
     /* find l1 unit being activated */
