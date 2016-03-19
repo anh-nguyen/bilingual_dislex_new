@@ -205,7 +205,7 @@ print_assoc_stats(epoch)
         }
       }
 
-      /* update L1 map values to reflect propagation from sem to L2 to L1 */   
+      /* update L1 map values to reflect propagation from sem to L2 to L1 */ 
       for (i = 0; i < nl2net; i++)
         for (j = 0; j < nl2net; j++)
           for (ii = 0; ii < nl1net; ii++)
@@ -213,7 +213,6 @@ print_assoc_stats(epoch)
           {
             l1units[ii][jj].prevvalue = l1units[ii][jj].value;
             l1units[ii][jj].value = l2l1assoc[i][j][ii][jj] * (sl2assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value);
-          
           }
       /* add sem->L1 activation to the units; find index of best-matching l1 word */
       best = (-1);
@@ -223,7 +222,8 @@ print_assoc_stats(epoch)
           {
             l1units[i][j].prevvalue = l1units[i][j].value;
             l1units[i][j].value = sl1assoc[s_i][s_j][i][j];
-            /*l1units[i][j].value = l1units[i][j].value + (sl1assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value); */
+            /*l1units[i][j].value += l1units[i][j].value + (sl1assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value);*/
+            /*l1units[i][j].value = sl1assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value;*/
             updatebestworst (&best, &foo, &besti, &bestj, &l1units[i][j],
                  i, j, fgreater, fsmaller);
           }
@@ -231,7 +231,7 @@ print_assoc_stats(epoch)
       l1_index = find_nearest (l1units[besti][bestj].comp, l1words, nl1rep, nl1words);
 
 
-      /* update L2 map values to reflect propagation from sem to L1 to L2 */   
+      /* update L2 map values to reflect propagation from sem to L1 to L2 */
       for (i = 0; i < nl1net; i++)
         for (j = 0; j < nl1net; j++)
           for (ii = 0; ii < nl2net; ii++)
@@ -239,7 +239,7 @@ print_assoc_stats(epoch)
           {
             l2units[ii][jj].prevvalue = l2units[ii][jj].value;
             l2units[ii][jj].value = l1l2assoc[i][j][ii][jj] * (sl1assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value);
-          }
+          } 
       
       /* add sem->L2 activation to the units; find index of best-matching l2 word */
       best = (-1);
@@ -248,8 +248,9 @@ print_assoc_stats(epoch)
         for (j = 0; j < nl2net; j++)
           {
             l2units[i][j].prevvalue = l2units[i][j].value;
-            /*l2units[i][j].value = l2units[i][j].value + (sl2assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value); */
+            /*l2units[i][j].value = l2units[i][j].value + (sl2assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value);*/
             l2units[i][j].value = sl2assoc[s_i][s_j][i][j];
+            /* l2units[i][j].value = sl2assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value;*/
             updatebestworst (&best, &foo, &besti, &bestj, &l2units[i][j],
                  i, j, fgreater, fsmaller);
           }
