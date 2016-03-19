@@ -197,7 +197,7 @@ iterate_pairs ()
         worst = (-1);
         for (i = 0; i < nl2net; i++)
           for (j = 0; j < nl2net; j++) {
-              l2units[i][j].prevvalue = l2units[i][j].value;
+            l2units[i][j].prevvalue = l2units[i][j].value;
             for (ii = 0; ii < nsnet; ii++) 
               for (jj = 0; jj < nsnet; jj++) {
                 l2units[i][j].value += sunits[ii][jj].value * sl2assoc[ii][jj][i][j];
@@ -246,7 +246,6 @@ iterate_pairs ()
           }
         }
       }
-
      
       /* now modify assoc weights */
       if (sl1_assoc_running &&
