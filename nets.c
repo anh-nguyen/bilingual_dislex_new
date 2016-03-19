@@ -163,17 +163,16 @@ iterate_pairs ()
 
       /* find input for & train l1 if it was not trained */
       if (!train_l1) {
-        best = (-1);
-        worst = (-1);
         for (i = 0; i < nl1net; i++)
           for (j = 0; j < nl1net; j++) {
               l1units[i][j].prevvalue = l1units[i][j].value;
             for (ii = 0; ii < nsnet; ii++) 
               for (jj = 0; jj < nsnet; jj++) {
                 l1units[i][j].value = sunits[ii][jj].value * sl1assoc[ii][jj][i][j];
-                updatebestworst(&best, &worst, &besti, &bestj, &l1units[i][j], i, j, fgreater, fsmaller);
               } 
             }
+        best = (-1);
+        worst = (-1);
         if (train_l2) {
           for (i = 0; i < nl1net; i++)
             for (j = 0; j < nl1net; j++) {
@@ -187,31 +186,20 @@ iterate_pairs ()
         }
         l1_index = find_nearest(l1units[besti][bestj].comp, l1words, nl1rep, nl1words);
 
-        /* train l1 with this input */
-        if (pairs[shuffletable[l1_index]].l1index != NONE)
-          {
-            if ((l1_running || l1l1_assoc_running || sl1_assoc_running))
-              present_input (L1INPMOD, l1units, nl1net, l1words,
-                 pairs[shuffletable[l1_index]].l1index,
-                 l1prop, &nl1prop, l1_nc);
-            if (l1_running)
-              modify_input_weights (L1INPMOD, l1units, l1_alpha, l1prop, nl1prop);
-          }
-        }
 
       /* find input for & train l2 if it was not trained */
       if (!train_l2) {
-        best = (-1);
-        worst = (-1);
         for (i = 0; i < nl2net; i++)
           for (j = 0; j < nl2net; j++) {
               l2units[i][j].prevvalue = l2units[i][j].value;
             for (ii = 0; ii < nsnet; ii++) 
               for (jj = 0; jj < nsnet; jj++) {
                 l2units[i][j].value = sunits[ii][jj].value * sl2assoc[ii][jj][i][j];
-                updatebestworst(&best, &worst, &besti, &bestj, &l2units[i][j], i, j, fgreater, fsmaller);
               } 
             }
+
+        best = (-1);
+        worst = (-1);
         if (train_l1) {
           for (i = 0; i < nl2net; i++)
             for (j = 0; j < nl2net; j++) {
@@ -248,6 +236,20 @@ iterate_pairs ()
               modify_input_weights (L2INPMOD, l2units, l2_alpha, l2prop, nl2prop);
           }
         }
+
+      if (!train_l1) {
+        /* train l1 */
+        if (pairs[shuffletable[l1_index]].l1index != NONE)
+          {
+            if ((l1_running || l1l2_assoc_running || sl1_assoc_running))
+              present_input (L1INPMOD, l1units, nl1net, l1words,
+                 pairs[shuffletable[l1_index]].l1index,
+                 l1prop, &nl1prop, l1_nc);
+            if (l1_running)
+              modify_input_weights (L1INPMOD, l1units, l1_alpha, l1prop, nl1prop);
+          }
+        }
+      }
 
      
       /* now modify assoc weights */
