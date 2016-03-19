@@ -170,20 +170,21 @@ iterate_pairs ()
               l1units[i][j].prevvalue = l1units[i][j].value;
             for (ii = 0; ii < nsnet; ii++) 
               for (jj = 0; jj < nsnet; jj++) {
-                l1units[i][j].value = sunits[ii][jj].value * sl1assoc[ii][jj][i][j];
-                updatebestworst(&best, &worst, &besti, &bestj, &l1units[i][j], i, j, fgreater, fsmaller);
+                l1units[i][j].value += sunits[ii][jj].value * sl1assoc[ii][jj][i][j];
               } 
+              updatebestworst(&best, &worst, &besti, &bestj, &l1units[i][j], i, j, fgreater, fsmaller);
+              l1units[i][j].value = l1units[i][j].prevvalue;
             }
-        best = (-1);
-        worst = (-1);
         if (train_l2) {
+          best = (-1);
+          worst = (-1);
           for (i = 0; i < nl1net; i++)
             for (j = 0; j < nl1net; j++) {
               for (ii = 0; ii < nl2net; ii++) 
                 for (jj = 0; jj < nl2net; jj++) {
                   l1units[i][j].value += l2units[ii][jj].value * l2l1assoc[ii][jj][i][j];
-                  updatebestworst(&best, &worst, &besti, &bestj, &l1units[i][j], i, j, fgreater, fsmaller);
                 }
+              updatebestworst(&best, &worst, &besti, &bestj, &l1units[i][j], i, j, fgreater, fsmaller);
               l1units[i][j].value = l1units[i][j].prevvalue;
               }
         }
@@ -199,21 +200,22 @@ iterate_pairs ()
               l2units[i][j].prevvalue = l2units[i][j].value;
             for (ii = 0; ii < nsnet; ii++) 
               for (jj = 0; jj < nsnet; jj++) {
-                l2units[i][j].value = sunits[ii][jj].value * sl2assoc[ii][jj][i][j];
-                updatebestworst(&best, &worst, &besti, &bestj, &l1units[i][j], i, j, fgreater, fsmaller);
-              } 
+                l2units[i][j].value += sunits[ii][jj].value * sl2assoc[ii][jj][i][j];
+              }
+              updatebestworst(&best, &worst, &besti, &bestj, &l1units[i][j], i, j, fgreater, fsmaller); 
+              l2units[i][j].value = l2units[i][j].prevvalue;
             }
 
-        best = (-1);
-        worst = (-1);
         if (train_l1) {
+          best = (-1);
+          worst = (-1);
           for (i = 0; i < nl2net; i++)
             for (j = 0; j < nl2net; j++) {
               for (ii = 0; ii < nl1net; ii++) 
                 for (jj = 0; jj < nl1net; jj++) {
                   l2units[i][j].value += l1units[ii][jj].value * l1l2assoc[ii][jj][i][j];
-                  updatebestworst(&best, &worst, &besti, &bestj, &l2units[i][j], i, j, fgreater, fsmaller);
                 }
+              updatebestworst(&best, &worst, &besti, &bestj, &l2units[i][j], i, j, fgreater, fsmaller);
               l2units[i][j].value = l2units[i][j].prevvalue;
               }
         }

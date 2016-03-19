@@ -214,7 +214,6 @@ find_assoc_stats(epoch)
       for (i = 0; i < nl1net; i++)
         for (j = 0; j < nl1net; j++)
           {
-            l1units[i][j].prevvalue = l1units[i][j].value;
             l1units[i][j].value = sl1assoc[s_i][s_j][i][j];
           }
 
@@ -224,23 +223,23 @@ find_assoc_stats(epoch)
       for (i = 0; i < nl2net; i++)
         for (j = 0; j < nl2net; j++)
           {
-            l2units[i][j].prevvalue = l2units[i][j].value;
             l2units[i][j].value = sl2assoc[s_i][s_j][i][j];
           }
 
-      /* now update l1 with activations from l2 */
+      /* now update l1 with activations from l2, keeping track of old value for testing l2 */
       best = (-1);
       foo = (-1);
       for (i = 0; i < nl1net; i++)
-        for (j = 0; j < nl1net; j++)
+        for (j = 0; j < nl1net; j++) {
+          l1units[i][j].prevvalue = l1units[i][j].value;
           for (ii = 0; ii < nl2net; ii++)
             for (jj = 0; jj < nl2net; jj++)
           {
-            l1units[i][j].prevvalue = l1units[i][j].value;
             l1units[i][j].value += l2units[ii][jj].value * l2l1assoc[ii][jj][i][j];
-            updatebestworst (&best, &foo, &besti, &bestj, &l1units[i][j],
-                 i, j, fgreater, fsmaller);
-          }      
+          }   
+        updatebestworst (&best, &foo, &besti, &bestj, &l1units[i][j],
+               i, j, fgreater, fsmaller); 
+        }  
 
       l1_index = find_nearest (l1units[besti][bestj].comp, l1words, nl1rep, nl1words);
 
@@ -248,15 +247,15 @@ find_assoc_stats(epoch)
       best = (-1);
       foo = (-1);
       for (i = 0; i < nl2net; i++)
-        for (j = 0; j < nl2net; j++)
+        for (j = 0; j < nl2net; j++) {
           for (ii = 0; ii < nl1net; ii++)
             for (jj = 0; jj < nl1net; jj++)
           {
-            l2units[i][j].prevvalue = l2units[i][j].value;
             l2units[i][j].value += l1units[ii][jj].prevvalue * l1l2assoc[ii][jj][i][j];
-            updatebestworst (&best, &foo, &besti, &bestj, &l2units[i][j],
-                 i, j, fgreater, fsmaller);
           }
+        updatebestworst (&best, &foo, &besti, &bestj, &l2units[i][j],
+             i, j, fgreater, fsmaller);
+        }
       l2_index = find_nearest (l2units[besti][bestj].comp, l2words, nl2rep, nl2words);
      
       if (l1_index == pairs[pair_index].l1index) {
