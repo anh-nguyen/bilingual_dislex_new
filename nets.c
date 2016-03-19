@@ -126,109 +126,6 @@ iterate_pairs ()
   
   /* iterate through all word pairs */
   for (pairi = 0; pairi < npairs; pairi++) {
-
-      if (testing) {
-        /* propagate from semantic to L1 and L2 */
-        if (pairs[shuffletable[pairi]].sindex != NONE)
-        {
-          if (sem_running || sl1_assoc_running || sl2_assoc_running)
-            present_input (SINPMOD, sunits, nsnet, swords,
-               pairs[shuffletable[pairi]].sindex,
-               sprop, &nsprop, sem_nc);
-          if (sl1_assoc_running)
-            associate (sunits, L1OUTMOD, l1units, nl1net, l1words,
-                 pairs[shuffletable[pairi]].l1index,
-                 sprop, nsprop, sl1assoc);
-          if (sl2_assoc_running)
-            associate (sunits, L2OUTMOD, l2units, nl2net, l2words,
-                 pairs[shuffletable[pairi]].l2index,
-                 sprop, nsprop, sl2assoc);
-          if (displaying && (sem_running || sl1_assoc_running || sl2_assoc_running))
-          {
-            display_lex (SINPMOD, sunits, nsnet);
-            display_error (SINPMOD);
-              if (sl1_assoc_running)
-            {
-              display_lex (L1OUTMOD, l1units, nl1net);
-              display_error (L1OUTMOD);
-            }
-              if (sl2_assoc_running)
-            {
-              display_lex (L2OUTMOD, l2units, nl2net);
-              display_error (L2OUTMOD);
-            }
-              wait_and_handle_events ();
-          }
-        }
-
-         /* then propagate from L1 to L2 and semantic */
-      if (pairs[shuffletable[pairi]].l1index != NONE)
-      {
-        if ((l1_running || l1l2_assoc_running || sl1_assoc_running))
-          present_input (L1INPMOD, l1units, nl1net, l1words,
-             pairs[shuffletable[pairi]].l1index,
-             l1prop, &nl1prop, l1_nc);
-        if (sl1_assoc_running)
-          associate (l1units, SOUTMOD, sunits, nsnet, swords,
-               pairs[shuffletable[pairi]].sindex,
-               l1prop, nl1prop, l1sassoc);
-        if (l1l2_assoc_running)
-          associate (l1units, L2OUTMOD, l2units, nl2net, l2words,
-               pairs[shuffletable[pairi]].l2index,
-               l1prop, nl1prop, l1l2assoc);
-
-        if (displaying && (l1_running || l1l2_assoc_running || sl1_assoc_running))
-          { 
-          display_lex (L1INPMOD, l1units, nl1net);
-          display_error (L1INPMOD);
-          if (sl1_assoc_running)
-            {
-            display_lex (SOUTMOD, sunits, nsnet);
-            display_error (SOUTMOD);
-            }
-          if (l1l2_assoc_running)
-            {
-            display_lex (L2OUTMOD, l2units, nl2net);
-            display_error (L2OUTMOD);
-            }
-            wait_and_handle_events ();
-          }
-        }
-
-      /* then propagate from L2 to L1 and semantic */
-      if (pairs[shuffletable[pairi]].l2index != NONE)
-      {
-        if ((l2_running || l1l2_assoc_running || sl2_assoc_running))
-          present_input (L2INPMOD, l2units, nl2net, l2words,
-             pairs[shuffletable[pairi]].l2index,
-             l2prop, &nl2prop, l2_nc);
-        if (sl2_assoc_running)
-          associate (l2units, SOUTMOD, sunits, nsnet, swords,
-                pairs[shuffletable[pairi]].sindex,
-                l2prop, nl2prop, l2sassoc);
-        if (l1l2_assoc_running)
-          associate (l2units, L1OUTMOD, l1units, nl1net, l1words,
-               pairs[shuffletable[pairi]].l1index,
-               l2prop, nl2prop, l2l1assoc);
-        if (displaying && (l2_running || l1l2_assoc_running || sl2_assoc_running))
-          { 
-          display_lex (L2INPMOD, l2units, nl2net);
-          display_error (L2INPMOD);
-          if (sl2_assoc_running)
-            {
-            display_lex (SOUTMOD, sunits, nsnet);
-            display_error (SOUTMOD);
-            }
-          if (l1l2_assoc_running)
-            {
-            display_lex (L1OUTMOD, l1units, nl1net);
-            display_error (L1OUTMOD);
-            }
-          wait_and_handle_events ();
-          }
-        } 
-      }
-
     if (!testing) {
       bool train_l1 = bool_with_prob(l1_exposure);
       bool train_l2 = bool_with_prob(l2_exposure);
@@ -341,7 +238,7 @@ iterate_pairs ()
           }
       }
 
-      if (!testing && sl2_assoc_running &&
+      if (sl2_assoc_running &&
         pairs[shuffletable[pairi]].l2index != NONE &&
         pairs[shuffletable[pairi]].sindex != NONE)
       {
@@ -360,7 +257,7 @@ iterate_pairs ()
         }
       }
   
-      if (!testing && l1l2_assoc_running &&
+      if (l1l2_assoc_running &&
         pairs[shuffletable[pairi]].l1index != NONE &&
         pairs[shuffletable[pairi]].l2index != NONE)
       {
@@ -540,7 +437,7 @@ find_assoc_image (modi, inpunits, prop, nprop, outunits, noutnet, assoc, abest)
     for (j = 0; j < noutnet; j++)
       {
 	/* propagate activation from input to output map */
-	  (&outunits[i][j], i, j, inpunits, assoc, prop, nprop);
+	assocresponse (&outunits[i][j], i, j, inpunits, assoc, prop, nprop);
 	/* find best and worst and best indices */
 	updatebestworst (abest, &foo, &associ, &assocj, &outunits[i][j],
 			 i, j, fgreater, fsmaller);

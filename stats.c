@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <stdbool.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
@@ -181,7 +182,7 @@ print_stats (epoch)
 }
 
 void 
-print_assoc_stats(epoch)
+find_assoc_stats(epoch)
   /* mimics BNT -- only test for 60 word items */
   /* test if correct units in L1 and L2 light up when a sem word is selected */
   int epoch;
@@ -190,8 +191,10 @@ print_assoc_stats(epoch)
    int l1_correct = 0;
    int l2_correct = 0;
    double best, foo; /* best and worst response found */
+   bool verbose = FALSE;
 
-   /*printf("Wrong word pairs: \n");*/
+   if (verbose) 
+    printf("Wrong word pairs: \n");
 
    /* for each unit with a label in the sem map, find the L1 and L2 units with max response */
 
@@ -205,15 +208,6 @@ print_assoc_stats(epoch)
         }
       }
 
-      /* update L1 map values to reflect propagation from sem to L2 to L1 */ 
-      for (i = 0; i < nl2net; i++)
-        for (j = 0; j < nl2net; j++)
-          for (ii = 0; ii < nl1net; ii++)
-            for (jj = 0; jj < nl1net; jj++)
-          {
-            l1units[ii][jj].prevvalue = l1units[ii][jj].value;
-            l1units[ii][jj].value = l2l1assoc[i][j][ii][jj] * (sl2assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value);
-          }
       /* add sem->L1 activation to the units; find index of best-matching l1 word */
       best = (-1);
       foo = (-1);
@@ -222,25 +216,8 @@ print_assoc_stats(epoch)
           {
             l1units[i][j].prevvalue = l1units[i][j].value;
             l1units[i][j].value = sl1assoc[s_i][s_j][i][j];
-            /*l1units[i][j].value += l1units[i][j].value + (sl1assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value);*/
-            /*l1units[i][j].value = sl1assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value;*/
-            updatebestworst (&best, &foo, &besti, &bestj, &l1units[i][j],
-                 i, j, fgreater, fsmaller);
           }
-      
-      l1_index = find_nearest (l1units[besti][bestj].comp, l1words, nl1rep, nl1words);
 
-
-      /* update L2 map values to reflect propagation from sem to L1 to L2 */
-      for (i = 0; i < nl1net; i++)
-        for (j = 0; j < nl1net; j++)
-          for (ii = 0; ii < nl2net; ii++)
-            for (jj = 0; jj < nl2net; jj++)
-          {
-            l2units[ii][jj].prevvalue = l2units[ii][jj].value;
-            l2units[ii][jj].value = l1l2assoc[i][j][ii][jj] * (sl1assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value);
-          } 
-      
       /* add sem->L2 activation to the units; find index of best-matching l2 word */
       best = (-1);
       foo = (-1);
@@ -248,27 +225,52 @@ print_assoc_stats(epoch)
         for (j = 0; j < nl2net; j++)
           {
             l2units[i][j].prevvalue = l2units[i][j].value;
-            /*l2units[i][j].value = l2units[i][j].value + (sl2assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value);*/
             l2units[i][j].value = sl2assoc[s_i][s_j][i][j];
-            /* l2units[i][j].value = sl2assoc[s_i][s_j][i][j] * sunits[s_i][s_j].value;*/
+          }
+
+      /* now update l1 with activations from l2 */
+      best = (-1);
+      foo = (-1);
+      for (i = 0; i < nl1net; i++)
+        for (j = 0; j < nl1net; j++)
+          for (ii = 0; ii < nl2net; ii++)
+            for (jj = 0; jj < nl2net; jj++)
+          {
+            l1units[i][j].prevvalue = l1units[i][j].value;
+            l1units[i][j].value += l2units[ii][jj].value * l2l1assoc[ii][jj][i][j];
+            updatebestworst (&best, &foo, &besti, &bestj, &l1units[i][j],
+                 i, j, fgreater, fsmaller);
+          }      
+
+      l1_index = find_nearest (l1units[besti][bestj].comp, l1words, nl1rep, nl1words);
+
+      /* now update l2 with activations from l1 */
+      best = (-1);
+      foo = (-1);
+      for (i = 0; i < nl2net; i++)
+        for (j = 0; j < nl2net; j++)
+          for (ii = 0; ii < nl1net; ii++)
+            for (jj = 0; jj < nl1net; jj++)
+          {
+            l2units[i][j].prevvalue = l2units[i][j].value;
+            l2units[i][j].value += l1units[ii][jj].prevvalue * l1l2assoc[ii][jj][i][j];
             updatebestworst (&best, &foo, &besti, &bestj, &l2units[i][j],
                  i, j, fgreater, fsmaller);
           }
-      
       l2_index = find_nearest (l2units[besti][bestj].comp, l2words, nl2rep, nl2words);
      
       if (l1_index == pairs[pair_index].l1index) {
         l1_correct = l1_correct + 1;                 
-      } /*else if (l2_index == pairs[pair_index].l2index) {
+      } else if (verbose && l2_index == pairs[pair_index].l2index) {
         printf("%s\t%s\t%s\n", swords[s_index].chars, l1words[l1_index].chars, l2words[l2_index].chars);
-      }*/
+      }
       if (l2_index == pairs[pair_index].l2index) {
         l2_correct = l2_correct + 1;              
-      } /*else if (l1_index == pairs[pair_index].l1index) {
+      } else if (verbose && l1_index == pairs[pair_index].l1index) {
         printf("%s\t%s\t%s\n", swords[s_index].chars, l1words[l1_index].chars, l2words[l2_index].chars);
-      } else {
+      } else if (verbose) {
         printf("%s\t%s\t%s\n", swords[s_index].chars, l1words[l1_index].chars, l2words[l2_index].chars);
-      }*/
+      }
    }
    printf("\nEpoch %d\n", epoch);
    printf("L1 correct: %d/%d (%.2f%%)\n", l1_correct, nl1words, 100.0 * (double) ((double)l1_correct/(double)nl1words));
