@@ -163,12 +163,15 @@ iterate_pairs ()
 
       /* find input for & train l1 if it was not trained */
       if (!train_l1) {
+        best = (-1);
+        worst = (-1);
         for (i = 0; i < nl1net; i++)
           for (j = 0; j < nl1net; j++) {
               l1units[i][j].prevvalue = l1units[i][j].value;
             for (ii = 0; ii < nsnet; ii++) 
               for (jj = 0; jj < nsnet; jj++) {
                 l1units[i][j].value = sunits[ii][jj].value * sl1assoc[ii][jj][i][j];
+                updatebestworst(&best, &worst, &besti, &bestj, &l1units[i][j], i, j, fgreater, fsmaller);
               } 
             }
         best = (-1);
@@ -189,12 +192,15 @@ iterate_pairs ()
 
       /* find input for & train l2 if it was not trained */
       if (!train_l2) {
+        best = (-1);
+        worst = (-1);
         for (i = 0; i < nl2net; i++)
           for (j = 0; j < nl2net; j++) {
               l2units[i][j].prevvalue = l2units[i][j].value;
             for (ii = 0; ii < nsnet; ii++) 
               for (jj = 0; jj < nsnet; jj++) {
                 l2units[i][j].value = sunits[ii][jj].value * sl2assoc[ii][jj][i][j];
+                updatebestworst(&best, &worst, &besti, &bestj, &l1units[i][j], i, j, fgreater, fsmaller);
               } 
             }
 
@@ -212,18 +218,6 @@ iterate_pairs ()
               }
         }
         l2_index = find_nearest(l2units[besti][bestj].comp, l2words, nl2rep, nl2words);
-
-
-        /* update l2 units; find unit with highest activation and corresponding word */
-        /*for (i = 0; i < nl2net; i++)
-          for (j = 0; j < nl2net; j++) {
-            l2units[i][j].value = sunits[s_i][s_j].value * sl2assoc[s_i][s_j][i][j];
-            if (train_l1) {
-              l2units[i][j].value += l1units[l1_i][l1_j].value * l1l2assoc[l1_i][l1_j][i][j];
-            }
-            updatebestworst(&best, &worst, &l2_i, &l2_j, &l2units[i][j], i, j, fgreater, fsmaller);
-          } 
-        l2_index = find_nearest(l2units[l2_i][l2_j].comp, l2words, nl2rep, nl2words);*/
 
         /* train l2 with this input */
         if (pairs[shuffletable[l2_index]].l2index != NONE)
