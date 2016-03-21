@@ -107,7 +107,7 @@ iterate_pairs ()
     sprop[MAXLSNET * MAXLSNET];
   int pairi,        /* word pair counter */
     nl1prop, nl2prop, nsprop;     /* lex and sem number of prop units */
-  int i, j, ii, jj, s_i, s_j, l2_i, l2_j, l1_i, l1_j, l1_index, l2_index, besti, bestj;
+  int i, j, ii, jj, s_i, s_j, l1_index, l2_index, l1_pair, l2_pair, besti, bestj, p;
   double best, worst; /* activation values from sem map and the other phonetic map */
 
 
@@ -172,9 +172,10 @@ iterate_pairs ()
               for (jj = 0; jj < nsnet; jj++) {
                 l1units[i][j].value += sunits[ii][jj].value * sl1assoc[ii][jj][i][j];
               } 
-              updatebestworst(&best, &worst, &besti, &bestj, &l1units[i][j], i, j, fgreater, fsmaller);
-              if (!train_l2)
+              if (!train_l2) {
+                updatebestworst(&best, &worst, &besti, &bestj, &l1units[i][j], i, j, fgreater, fsmaller);
                 l1units[i][j].value = l1units[i][j].prevvalue;
+              }
             }
         if (train_l2) {
           best = (-1);
@@ -190,7 +191,13 @@ iterate_pairs ()
               }
         }
         l1_index = find_nearest(l1units[besti][bestj].comp, l1words, nl1rep, nl1words);
-
+        /* find the pair index with l1index = l1_index */
+        for (p = 0; p < npairs; p++) {
+          if (pairs[p].l1index == l1_index) {
+            l1_pair = p;
+            break;
+          }
+        }
 
       /* find input for & train l2 if it was not trained */
       if (!train_l2) {
@@ -203,9 +210,10 @@ iterate_pairs ()
               for (jj = 0; jj < nsnet; jj++) {
                 l2units[i][j].value += sunits[ii][jj].value * sl2assoc[ii][jj][i][j];
               }
-              updatebestworst(&best, &worst, &besti, &bestj, &l2units[i][j], i, j, fgreater, fsmaller); 
-              if (!train_l1) 
+              if (!train_l1) {
+                updatebestworst(&best, &worst, &besti, &bestj, &l2units[i][j], i, j, fgreater, fsmaller); 
                 l2units[i][j].value = l2units[i][j].prevvalue;
+              }
             }
 
         if (train_l1) {
@@ -222,13 +230,20 @@ iterate_pairs ()
               }
         }
         l2_index = find_nearest(l2units[besti][bestj].comp, l2words, nl2rep, nl2words);
-
+        
+        /* find the pair index with l2index = l2_index */
+        for (p = 0; p < npairs; p++) {
+          if (pairs[p].l2index == l2_index) {
+            l2_pair = p;
+            break;
+          }
+        }
         /* train l2 with this input */
-        if (pairs[shuffletable[l2_index]].l2index != NONE)
+        if (pairs[l2_pair].l2index != NONE)
           {
             if ((l2_running || l1l2_assoc_running || sl2_assoc_running))
               present_input (L2INPMOD, l2units, nl2net, l2words,
-                 pairs[shuffletable[l2_index]].l2index,
+                 pairs[l2_pair].l2index,
                  l2prop, &nl2prop, l2_nc);
             if (l2_running)
               modify_input_weights (L2INPMOD, l2units, l2_alpha, l2prop, nl2prop);
@@ -237,11 +252,11 @@ iterate_pairs ()
 
       if (!train_l1) {
         /* train l1 */
-        if (pairs[shuffletable[l1_index]].l1index != NONE)
+        if (pairs[l1_pair].l1index != NONE)
           {
             if ((l1_running || l1l2_assoc_running || sl1_assoc_running))
               present_input (L1INPMOD, l1units, nl1net, l1words,
-                 pairs[shuffletable[l1_index]].l1index,
+                 pairs[l1_pair].l1index,
                  l1prop, &nl1prop, l1_nc);
             if (l1_running)
               modify_input_weights (L1INPMOD, l1units, l1_alpha, l1prop, nl1prop);
