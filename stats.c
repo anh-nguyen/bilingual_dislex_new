@@ -191,7 +191,7 @@ find_assoc_stats(epoch)
    int l1_correct = 0;
    int l2_correct = 0;
    double best, foo; /* best and worst response found */
-   bool verbose = FALSE;
+   bool verbose = TRUE;
 
    if (verbose) 
     printf("Wrong word pairs: \n");
@@ -208,18 +208,14 @@ find_assoc_stats(epoch)
         }
       }
 
-      /* add sem->L1 activation to the units; find index of best-matching l1 word */
-      best = (-1);
-      foo = (-1);
+      /* add sem->L1 activation to the units */
       for (i = 0; i < nl1net; i++)
         for (j = 0; j < nl1net; j++)
           {
             l1units[i][j].value = sl1assoc[s_i][s_j][i][j];
           }
 
-      /* add sem->L2 activation to the units; find index of best-matching l2 word */
-      best = (-1);
-      foo = (-1);
+      /* add sem->L2 activation to the units */
       for (i = 0; i < nl2net; i++)
         for (j = 0; j < nl2net; j++)
           {
@@ -237,7 +233,7 @@ find_assoc_stats(epoch)
           {
             l1units[i][j].value += l2units[ii][jj].value * l2l1assoc[ii][jj][i][j];
           }   
-        updatebestworst (&best, &foo, &besti, &bestj, &l1units[i][j],
+          updatebestworst (&best, &foo, &besti, &bestj, &l1units[i][j],
                i, j, fgreater, fsmaller); 
         }  
 
