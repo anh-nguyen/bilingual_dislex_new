@@ -173,7 +173,8 @@ iterate_pairs ()
                 l1units[i][j].value += sunits[ii][jj].value * sl1assoc[ii][jj][i][j];
               } 
               updatebestworst(&best, &worst, &besti, &bestj, &l1units[i][j], i, j, fgreater, fsmaller);
-              l1units[i][j].value = l1units[i][j].prevvalue;
+              if (!train_l2)
+                l1units[i][j].value = l1units[i][j].prevvalue;
             }
         if (train_l2) {
           best = (-1);
@@ -203,7 +204,8 @@ iterate_pairs ()
                 l2units[i][j].value += sunits[ii][jj].value * sl2assoc[ii][jj][i][j];
               }
               updatebestworst(&best, &worst, &besti, &bestj, &l2units[i][j], i, j, fgreater, fsmaller); 
-              l2units[i][j].value = l2units[i][j].prevvalue;
+              if (!train_l1) 
+                l2units[i][j].value = l2units[i][j].prevvalue;
             }
 
         if (train_l1) {
