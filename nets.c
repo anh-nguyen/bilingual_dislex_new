@@ -198,23 +198,26 @@ iterate_pairs ()
             break;
           }
         }
+      }
 
       /* find input for & train l2 if it was not trained */
       if (!train_l2) {
         best = (-1);
         worst = (-1);
-        for (i = 0; i < nl2net; i++)
+        for (i = 0; i < nl2net; i++) {
           for (j = 0; j < nl2net; j++) {
             l2units[i][j].prevvalue = l2units[i][j].value;
-            for (ii = 0; ii < nsnet; ii++) 
+            for (ii = 0; ii < nsnet; ii++) {
               for (jj = 0; jj < nsnet; jj++) {
                 l2units[i][j].value += sunits[ii][jj].value * sl2assoc[ii][jj][i][j];
               }
+            }
               if (!train_l1) {
                 updatebestworst(&best, &worst, &besti, &bestj, &l2units[i][j], i, j, fgreater, fsmaller); 
                 l2units[i][j].value = l2units[i][j].prevvalue;
               }
             }
+          }
 
         if (train_l1) {
           best = (-1);
@@ -239,11 +242,11 @@ iterate_pairs ()
           }
         }
         /* train l2 with this input */
-        if (pairs[l2_pair].l2index != NONE)
+        if (pairs[shuffletable[l2_pair]].l2index != NONE)
           {
             if ((l2_running || l1l2_assoc_running || sl2_assoc_running))
               present_input (L2INPMOD, l2units, nl2net, l2words,
-                 pairs[l2_pair].l2index,
+                 pairs[shuffletable[l2_pair]].l2index,
                  l2prop, &nl2prop, l2_nc);
             if (l2_running)
               modify_input_weights (L2INPMOD, l2units, l2_alpha, l2prop, nl2prop);
@@ -252,16 +255,15 @@ iterate_pairs ()
 
       if (!train_l1) {
         /* train l1 */
-        if (pairs[l1_pair].l1index != NONE)
+        if (pairs[shuffletable[l1_pair]].l1index != NONE)
           {
             if ((l1_running || l1l2_assoc_running || sl1_assoc_running))
               present_input (L1INPMOD, l1units, nl1net, l1words,
-                 pairs[l1_pair].l1index,
+                 pairs[shuffletable[l1_pair]].l1index,
                  l1prop, &nl1prop, l1_nc);
             if (l1_running)
               modify_input_weights (L1INPMOD, l1units, l1_alpha, l1prop, nl1prop);
           }
-        }
       }
      
       /* now modify assoc weights */
