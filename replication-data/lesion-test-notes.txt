@@ -2,56 +2,57 @@ Each patient file is followed by the target correct percentages after lesioning.
 Each entry has the noise amount / Gaussian variance between associations, followed by number of correct answers in both languages.
 
 
-UTBA18
-	Target: Spanish 0.32 (~ 19 correct)	Eng 0.28 (~ 17 correct)
-
-	L1L2: 0		SL1: 1 		SL2: 1
-	Span: 2		Eng: 1
-
-	L1L2: 0		SL1: 0.2 	SL2: 0.2
-	Span: 41	Eng: 45
-
-	L1L2: 0		SL1: 0.5 	SL2: 0.5
-	Span: 8		Eng: 9
-
-	L1L2: 0		SL1: 0.3 	SL2: 0.3
-	Span: 19	Eng: 23
-
-	L1L2: 0		SL1: 0.3 	SL2: 0.32
-	Span: 20	Eng: 17
 
 
 BUBA01
 	Target: Spanish 0.43 (~ 26 correct)	Eng 0.36 (~ 22 correct)
 
-	L1L2: 0		SL1: 0.25 	SL2: 0.27
-	Span: 33	Eng: 21	
+	L1L2: 0		SL1: 0.3		SL2: 0.3
+	Span: 27	Eng: 34
 
-	L1L2: 0		SL1: 0.27 	SL2: 0.27
-	Span: 26	Eng: 23	
+	L1L2: 0		SL1: 0.4		SL2: 0.45
+	Span: 14	Eng: 16
 
+	L1L2: 0		SL1: 0.35		SL2: 0.35
+	Span: 20	Eng: 24
+
+	L1L2: 0		SL1: 0.33		SL2: 0.33
+	Span: 23	Eng: 25
+
+	L1L2: 0		SL1: 0.32		SL2: 0.32
+	Span: 27	Eng: 25
+
+	L1L2: 0		SL1: 0.32		SL2: 0.3
+	Span: 26	Eng: 25
+
+*	L1L2: 0		SL1: 0.4		SL2: 0.3
+	Span: 26	Eng: 20
+
+UTBA18
+	Target: Spanish 0.32 (~ 19 correct)	Eng 0.28 (~ 17 correct)
+
+	L1L2: 0		SL1: 0.33		SL2: 0.33
+	Span: 12	Eng: 6
+
+	L1L2: 0		SL1: 0.27		SL2: 0.27
+	Span: 19	Eng: 9
+
+	L1L2: 0		SL1: 0.27		SL2: 0.2
+	Span: 33	Eng: 10
+
+	L1L2: 0		SL1: 0.27		SL2: 0.1
+	Span: 19	Eng: 
 
 UTBA20
 	Target: Spanish 0.00 (~ 0 correct)	Eng 0.00 (~ 0 correct)
 
-	L1L2: 0		SL1: 2		SL2: 2
-	Span: 1		Eng: 1	
-
-	L1L2: 0		SL1: 2.2		SL2: 2.2
-	Span: 1		Eng: 2	
-
-	*L1L2: 0	SL1: 3 			SL2: 3
-	Span: 0		Eng: 0	
+	L1L2: 0		SL1: 		SL2: 
+	Span: 		Eng: 
 
 
 
 UTBA21
 	Target: Spanish 0.00 (~ 0 correct)	Eng 0.01 (~ 1 correct)
 
-	L1L2: 0		SL1: 2		SL2: 2
-	Span: 1		Eng: 1		
-
-	*L1L2: 0		SL1: 2		SL2: 2.3
-	Span: 0		Eng: 1
-
-
+	L1L2: 0		SL1: 		SL2: 
+	Span: 		Eng: 

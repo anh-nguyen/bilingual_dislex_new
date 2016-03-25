@@ -191,7 +191,7 @@ find_assoc_stats(epoch)
    int l1_correct = 0;
    int l2_correct = 0;
    double best, foo; /* best and worst response found */
-   bool verbose = TRUE;
+   bool verbose = FALSE;
 
    if (verbose) 
     printf("Wrong word pairs: \n");
