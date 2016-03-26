@@ -55,13 +55,36 @@ UTBA18
 *	L1L2: 0		SL1: 0.2		SL2: 0.31
 	Span: 20	Eng: 17
 
+
 UTBA20
 	Target: Spanish 0.00 (~ 0 correct)	Eng 0.00 (~ 0 correct)
 
-	L1L2: 0		SL1: 		SL2: 
-	Span: 		Eng: 
+	L1L2: 0		SL1: 0.3		SL2: 0.3
+	Span: 26	Eng: 25
 
+	L1L2: 0		SL1: 0.7		SL2: 0.7
+	Span: 6		Eng: 4
 
+	L1L2: 0		SL1: 0.8		SL2: 0.8
+	Span: 3		Eng: 6
+
+	L1L2: 0		SL1: 1			SL2: 1
+	Span: 4		Eng: 3
+
+	L1L2: 0		SL1: 1.5		SL2: 1.5
+	Span: 3		Eng: 3
+
+	L1L2: 0		SL1: 2 			SL2: 2
+	Span: 0		Eng: 1
+
+	L1L2: 0		SL1: 2.5 		SL2: 2.5
+	Span: 0		Eng: 1
+
+	L1L2: 0		SL1: 3  		SL2: 3
+	Span: 1		Eng: 1
+
+*	L1L2: 0		SL1: 3.8  		SL2: 3.8
+	Span: 0		Eng: 0
 
 UTBA21
 	Target: Spanish 0.00 (~ 0 correct)	Eng 0.01 (~ 1 correct)
