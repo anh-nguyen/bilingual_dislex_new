@@ -89,5 +89,8 @@ UTBA20
 UTBA21
 	Target: Spanish 0.00 (~ 0 correct)	Eng 0.01 (~ 1 correct)
 
-	L1L2: 0		SL1: 		SL2: 
-	Span: 		Eng: 
+	L1L2: 0		SL1: 2		SL2: 2.3
+	Span: 2		Eng: 3
+
+*	L1L2: 0		SL1: 2.5		SL2: 2.7
+	Span: 0		Eng: 1
